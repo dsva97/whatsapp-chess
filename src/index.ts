@@ -16,13 +16,14 @@ client.on("ready", () => {
 });
 
 client.on("message", async (message) => {
+  const chat = await message.getChat();
   const body = message.body;
 
   console.log(message);
 
   if (body.includes("!chess::init::")) {
     const white = message.author!;
-    const black = message.mentionedIds[0];
+    const black = message.mentionedIds[0]!;
     const msg = initGame({ white, black });
     if (msg) {
       await message.reply(msg + "");
@@ -41,6 +42,7 @@ client.on("message", async (message) => {
 
       const media = MessageMedia.fromFilePath(filePath);
       await client.sendMessage(message.author!, media);
+      await chat.sendMessage(media);
       await message.reply(moves);
     }
   } else if (body.includes("!chess::move::")) {
@@ -48,17 +50,19 @@ client.on("message", async (message) => {
     const [moving] = restMsg.split("::");
     console.log("moving:", moving);
     const user1 = message.author!;
-    const user2 = message.mentionedIds[0];
+    const user2 = message.mentionedIds[0]!;
     const { data, error } = await move([user1, user2], moving);
 
     if (error) {
       await message.reply(error);
     } else if (data) {
-      const { filePath, moves } = data;
+      const { filePath, moves, removeImage } = data;
 
       const media = MessageMedia.fromFilePath(filePath);
       await client.sendMessage(message.author!, media);
+      await chat.sendMessage(media);
       await message.reply(moves);
+      removeImage();
     } else {
       await message.reply("NO CONTROLLED");
     }
@@ -66,3 +70,5 @@ client.on("message", async (message) => {
 });
 
 client.initialize();
+
+console.log("RUNNING");

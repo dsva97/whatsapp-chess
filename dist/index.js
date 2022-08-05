@@ -3091,12 +3091,14 @@ var client = new import_whatsapp_web.Client({
   authStrategy: new import_whatsapp_web.LocalAuth()
 });
 client.on("qr", (qr) => {
+  console.log("Generando QR...", qr, "...listo.");
   (0, import_qrcode_terminal.generate)(qr, { small: true });
 });
 client.on("ready", () => {
   console.log("Client is ready!");
 });
 client.on("message", async (message) => {
+  const chat = await message.getChat();
   const body = message.body;
   console.log(message);
   if (body.includes("!chess::init::")) {
@@ -3118,6 +3120,7 @@ client.on("message", async (message) => {
       const { filePath, moves } = data;
       const media = import_whatsapp_web.MessageMedia.fromFilePath(filePath);
       await client.sendMessage(message.author, media);
+      await chat.sendMessage(media);
       await message.reply(moves);
     }
   } else if (body.includes("!chess::move::")) {
@@ -3133,6 +3136,7 @@ client.on("message", async (message) => {
       const { filePath, moves } = data;
       const media = import_whatsapp_web.MessageMedia.fromFilePath(filePath);
       await client.sendMessage(message.author, media);
+      await chat.sendMessage(media);
       await message.reply(moves);
     } else {
       await message.reply("NO CONTROLLED");
@@ -3140,3 +3144,4 @@ client.on("message", async (message) => {
   }
 });
 client.initialize();
+console.log("RUNNING");

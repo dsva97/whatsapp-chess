@@ -114,7 +114,7 @@ export const acceptGame = async ({
   }
 };
 
-export const move = async ([user1, user2]: [string, string], move: string) => {
+const moveFn = async ([user1, user2]: [string, string], move: string) => {
   const game = existGamePlaying({ white: user1, black: user2 });
   console.log(games, { white: user1, black: user2 });
   if (!game) {
@@ -153,3 +153,5 @@ export const move = async ([user1, user2]: [string, string], move: string) => {
     error: null,
   };
 };
+
+export { moveFn as move };

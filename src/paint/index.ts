@@ -6,14 +6,17 @@ import {
 } from "canvas";
 import { ChessInstance } from "chess.js";
 import { resolve } from "path";
-import { writeFileSync } from "fs";
+import { writeFileSync, rmSync } from "fs";
 import { ASSETS_PATH, BOARD_FILES_PATH } from "../config";
 import { getImagePathFromPiece, TPieceSquare } from "./getImagePath";
 
 export const WIDTH = (680 * 3) / 2;
 export const HEIGHT = (680 * 3) / 2;
 
-export const createCanvasContext = () => {
+export const createCanvasContext = (): {
+  canvas: Canvas;
+  context: CanvasRenderingContext2D;
+} => {
   const canvas = createCanvas(WIDTH, HEIGHT);
   const context = canvas.getContext("2d");
 
@@ -62,5 +65,6 @@ export const writeFinalBoard = async (canvas: Canvas, date: Date) => {
   const fileName = date.getTime() + ".png";
   const filePath = resolve(BOARD_FILES_PATH, fileName);
   writeFileSync(filePath, buffer);
-  return { fileName, filePath, buffer };
+  const removeImage = () => rmSync(filePath);
+  return { fileName, filePath, buffer, removeImage };
 };
